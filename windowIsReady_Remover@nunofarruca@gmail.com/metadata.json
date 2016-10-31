@@ -4,7 +4,9 @@
   "name": "'Window Is Ready' Notification Remover", 
   "shell-version": [
     "3.18",
-    "3.20"
+    "3.20",
+    "3.21",
+    "3.22"
   ], 
   "url": "https://github.com/nunofarruca/WindowIsReady_Remover", 
   "uuid": "windowIsReady_Remover@nunofarruca@gmail.com", 
