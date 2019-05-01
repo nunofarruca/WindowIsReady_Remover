@@ -12,6 +12,7 @@ WindowIsReadyRemover.prototype = {
         this._tracker = Shell.WindowTracker.get_default();
         log('Disabling Window Is Ready Notification');
         global.display.disconnect(Main.windowAttentionHandler._windowDemandsAttentionId);
+        global.display.disconnect(Main.windowAttentionHandler._windowMarkedUrgentId);
     },
 
     destroy: function () {
