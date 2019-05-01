@@ -8,11 +8,10 @@ function WindowIsReadyRemover() {
 }
 
 WindowIsReadyRemover.prototype = {
-    
     _init : function() {
         this._tracker = Shell.WindowTracker.get_default();
-		log('Disabling Window Is Ready Notification')
-		global.display.disconnect(Main.windowAttentionHandler._windowDemandsAttentionId);
+        log('Disabling Window Is Ready Notification');
+        global.display.disconnect(Main.windowAttentionHandler._windowDemandsAttentionId);
     },
 
     destroy: function () {
