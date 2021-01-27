@@ -1,7 +1,7 @@
 const Main = imports.ui.main;
 const Handler = Main.windowAttentionHandler;
 
-function WindowIsReadyRemover() {
+function init() {
 }
 
 function enable() {
