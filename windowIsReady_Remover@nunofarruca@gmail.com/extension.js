@@ -1,34 +1,35 @@
 const Main = imports.ui.main;
-const WindowAttentionHandler = imports.ui.windowAttentionHandler;
-const Shell = imports.gi.Shell;
-const Lang = imports.lang;
+const Handler = Main.windowAttentionHandler;
 
 function WindowIsReadyRemover() {
-    this._init();
-}
-
-WindowIsReadyRemover.prototype = {
-    _init : function() {
-        this._tracker = Shell.WindowTracker.get_default();
-        log('Disabling Window Is Ready Notification');
-        global.display.disconnect(Main.windowAttentionHandler._windowDemandsAttentionId);
-        global.display.disconnect(Main.windowAttentionHandler._windowMarkedUrgentId);
-    },
-
-    destroy: function () {
-        global.display.disconnect(this._handlerid);
-    }
-}
-
-let windowIsReadyRemover;
-
-function init() {
 }
 
 function enable() {
-    windowIsReadyRemover = new WindowIsReadyRemover();
+    if (Handler._windowDemandsAttentionId) {
+        global.display.disconnect(Handler._windowDemandsAttentionId);
+        Handler._windowDemandsAttentionId = null;
+    }
+    if (Handler._windowMarkedUrgentId) {
+        global.display.disconnect(Handler._windowMarkedUrgentId);
+        Handler._windowMarkedUrgentId = null;
+    }
 }
 
 function disable() {
-    windowIsReadyRemover.destroy();
+    if (!Handler._windowDemandsAttentionId) {
+        Handler._windowDemandsAttentionId = global.display.connect(
+            'window-demands-attention',
+            (display, window) => {
+                Handler._onWindowDemandsAttention(display, window);
+            }
+        );
+    }
+    if (!Handler._windowMarkedUrgentId) {
+        Handler._windowMarkedUrgentId = global.display.connect(
+            'window-marked-urgent',
+            (display, window) => {
+                Handler._onWindowDemandsAttention(display, window);
+            }
+        );
+    }
 }
