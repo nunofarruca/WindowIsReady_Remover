@@ -21,7 +21,6 @@ function buildPrefsWidget() {
     });
 
     let prefsWidget = new Gtk.Grid({
-        margin: 18,
         column_spacing: 12,
         row_spacing: 12,
         visible: true
