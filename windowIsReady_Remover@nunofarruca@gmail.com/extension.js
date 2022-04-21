@@ -6,6 +6,7 @@ const Gio = imports.gi.Gio;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Config = imports.misc.config;
 const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
+const GObject = imports.gi.GObject;
 
 function getSettings() {
     let GioSSS = Gio.SettingsSchemaSource;
@@ -26,15 +27,19 @@ function init() {
 
 function enable() {
     if (major >= 42) {
-        log(Me.metadata.name + ' > start with shell 42 or higher');
-        global.display.disconnectObject(Handler);
+        this.blockSignal('window-demands-attention');
+        this.blockSignal('window-marked-urgent');
     } else {
-        this.enablePre42();
+        this.disableSignalsPre42();
     }
 }
 
-function enablePre42() {
-    log(Me.metadata.name + ' > start with shell lower than 42');
+function blockSignal(id) {
+    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
+    GObject.signal_handler_block(global.display, signalId);
+}
+
+function disableSignalsPre42() {
     if (Handler._windowDemandsAttentionId) {
         global.display.disconnect(Handler._windowDemandsAttentionId);
         Handler._windowDemandsAttentionId = null;
@@ -53,19 +58,20 @@ function disable() {
         log(Me.metadata.name + ' > disable was prevented');
     } else {
         if (major >= 42) {
-            log(Me.metadata.name + ' > disable executed with shell 42 or higher');
-            global.display.connectObject(
-                'window-demands-attention', Handler._onWindowDemandsAttention.bind(Handler),
-                'window-marked-urgent', Handler._onWindowDemandsAttention.bind(Handler),
-                Handler);
+            this.unblockSignal('window-demands-attention');
+            this.unblockSignal('window-marked-urgent');
         } else {
             this.disabledPre42();
-        }
+        }            
     }
 }
 
-function disabledPre42() {
-    log(Me.metadata.name + ' > disable executed with shell lower than 42');
+function unblockSignal(id){
+    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
+    GObject.signal_handler_unblock(global.display, signalId);
+}
+
+function enableSignalsPre42(){
     if (!Handler._windowDemandsAttentionId) {
         Handler._windowDemandsAttentionId = global.display.connect(
             'window-demands-attention',
