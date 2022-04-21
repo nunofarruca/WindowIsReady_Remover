@@ -27,25 +27,26 @@ function init() {
 
 function enable() {
     if (major >= 42) {
-        this.blockSignal('window-demands-attention');
-        this.blockSignal('window-marked-urgent');
+        blockSignal('window-demands-attention');
+        blockSignal('window-marked-urgent');
     } else {
-        this.disableSignalsPre42();
+        disableSignalsPre42();
     }
 }
 
 function disable() {
     let settings = getSettings();
     let preventDisable = settings.get_boolean('prevent-disable');
+    let inLockScreen = Main.sessionMode.isLocked;
 
-    if (preventDisable) {
-        log(Me.metadata.name + ' > disable was prevented, please check settings.');
+    if (inLockScreen && preventDisable) {
+        // log(Me.metadata.name + ' > disable was prevented, please check settings.');
     } else {
         if (major >= 42) {
-            this.unblockSignal('window-demands-attention');
-            this.unblockSignal('window-marked-urgent');
+            unblockSignal('window-demands-attention');
+            unblockSignal('window-marked-urgent');
         } else {
-            this.enableSignalsPre42();
+            enableSignalsPre42();
         }            
     }
 }
