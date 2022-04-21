@@ -34,9 +34,30 @@ function enable() {
     }
 }
 
+function disable() {
+    let settings = getSettings();
+    let preventDisable = settings.get_boolean('prevent-disable');
+
+    if (preventDisable) {
+        log(Me.metadata.name + ' > disable was prevented, please check settings.');
+    } else {
+        if (major >= 42) {
+            this.unblockSignal('window-demands-attention');
+            this.unblockSignal('window-marked-urgent');
+        } else {
+            this.enableSignalsPre42();
+        }            
+    }
+}
+
 function blockSignal(id) {
     let signalId = GObject.signal_handler_find(global.display, { signalId: id });
     GObject.signal_handler_block(global.display, signalId);
+}
+
+function unblockSignal(id){
+    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
+    GObject.signal_handler_unblock(global.display, signalId);
 }
 
 function disableSignalsPre42() {
@@ -48,27 +69,6 @@ function disableSignalsPre42() {
         global.display.disconnect(Handler._windowMarkedUrgentId);
         Handler._windowMarkedUrgentId = null;
     }
-}
-
-function disable() {
-    let settings = getSettings();
-    let preventDisable = settings.get_boolean('prevent-disable');
-
-    if (preventDisable) {
-        log(Me.metadata.name + ' > disable was prevented');
-    } else {
-        if (major >= 42) {
-            this.unblockSignal('window-demands-attention');
-            this.unblockSignal('window-marked-urgent');
-        } else {
-            this.disabledPre42();
-        }            
-    }
-}
-
-function unblockSignal(id){
-    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
-    GObject.signal_handler_unblock(global.display, signalId);
 }
 
 function enableSignalsPre42(){
