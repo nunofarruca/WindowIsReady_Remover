@@ -2,25 +2,9 @@
 
 const Main = imports.ui.main;
 const Handler = Main.windowAttentionHandler;
-const Gio = imports.gi.Gio;
-const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Config = imports.misc.config;
 const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 const GObject = imports.gi.GObject;
-
-function getSettings() {
-    let GioSSS = Gio.SettingsSchemaSource;
-    let schemaSource = GioSSS.new_from_directory(
-        Me.dir.get_child("schemas").get_path(),
-        GioSSS.get_default(),
-        false
-    );
-    let schemaObj = schemaSource.lookup('org.gnome.shell.extensions.windowIsReady_Remover', true);
-    if (!schemaObj) {
-        throw new Error('cannot find schemas');
-    }
-    return new Gio.Settings({ settings_schema: schemaObj });
-}
 
 function init() {
 }
@@ -35,19 +19,15 @@ function enable() {
 }
 
 function disable() {
-    let settings = getSettings();
-    let preventDisable = settings.get_boolean('prevent-disable');
-    let inLockScreen = Main.sessionMode.isLocked;
+    if (Main.sessionMode.isLocked) {
+        return
+    }
 
-    if (inLockScreen && preventDisable) {
-        // log(Me.metadata.name + ' > disable was prevented, please check settings.');
+    if (major >= 42) {
+        unblockSignal('window-demands-attention');
+        unblockSignal('window-marked-urgent');
     } else {
-        if (major >= 42) {
-            unblockSignal('window-demands-attention');
-            unblockSignal('window-marked-urgent');
-        } else {
-            enableSignalsPre42();
-        }            
+        enableSignalsPre42();
     }
 }
 
