@@ -10,4 +10,4 @@ Can be changed on preferences.
 
 To fully disable extension please restart gnome-shell.
 
-(Tested using Fedora 33 with gnome 3.38)
+(Tested using Fedora 36 with gnome 42)

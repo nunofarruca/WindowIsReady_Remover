@@ -4,6 +4,8 @@ const Main = imports.ui.main;
 const Handler = Main.windowAttentionHandler;
 const Gio = imports.gi.Gio;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const Config = imports.misc.config;
+const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 
 function getSettings() {
     let GioSSS = Gio.SettingsSchemaSource;
@@ -23,6 +25,16 @@ function init() {
 }
 
 function enable() {
+    if (major >= 42) {
+        log(Me.metadata.name + ' > start with shell 42 or higher');
+        global.display.disconnectObject(Handler);
+    } else {
+        this.enablePre42();
+    }
+}
+
+function enablePre42() {
+    log(Me.metadata.name + ' > start with shell lower than 42');
     if (Handler._windowDemandsAttentionId) {
         global.display.disconnect(Handler._windowDemandsAttentionId);
         Handler._windowDemandsAttentionId = null;
@@ -38,23 +50,36 @@ function disable() {
     let preventDisable = settings.get_boolean('prevent-disable');
 
     if (preventDisable) {
-        //log(Me.metadata.name + ' > Disable was prevented');
+        log(Me.metadata.name + ' > disable was prevented');
     } else {
-        if (!Handler._windowDemandsAttentionId) {
-            Handler._windowDemandsAttentionId = global.display.connect(
-                'window-demands-attention',
-                (display, window) => {
-                    Handler._onWindowDemandsAttention(display, window);
-                }
-            );
+        if (major >= 42) {
+            log(Me.metadata.name + ' > disable executed with shell 42 or higher');
+            global.display.connectObject(
+                'window-demands-attention', Handler._onWindowDemandsAttention.bind(Handler),
+                'window-marked-urgent', Handler._onWindowDemandsAttention.bind(Handler),
+                Handler);
+        } else {
+            this.disabledPre42();
         }
-        if (!Handler._windowMarkedUrgentId) {
-            Handler._windowMarkedUrgentId = global.display.connect(
-                'window-marked-urgent',
-                (display, window) => {
-                    Handler._onWindowDemandsAttention(display, window);
-                }
-            );
-        }
+    }
+}
+
+function disabledPre42() {
+    log(Me.metadata.name + ' > disable executed with shell lower than 42');
+    if (!Handler._windowDemandsAttentionId) {
+        Handler._windowDemandsAttentionId = global.display.connect(
+            'window-demands-attention',
+            (display, window) => {
+                Handler._onWindowDemandsAttention(display, window);
+            }
+        );
+    }
+    if (!Handler._windowMarkedUrgentId) {
+        Handler._windowMarkedUrgentId = global.display.connect(
+            'window-marked-urgent',
+            (display, window) => {
+                Handler._onWindowDemandsAttention(display, window);
+            }
+        );
     }
 }
