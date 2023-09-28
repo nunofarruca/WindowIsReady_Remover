@@ -1,72 +1,32 @@
 'use strict';
 
-const Main = imports.ui.main;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
+import GObject from 'gi://GObject';
 const Handler = Main.windowAttentionHandler;
-const Config = imports.misc.config;
-const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
-const GObject = imports.gi.GObject;
 
-function init() {
-}
-
-function enable() {
-    if (major >= 42) {
-        blockSignal('window-demands-attention');
-        blockSignal('window-marked-urgent');
-    } else {
-        disableSignalsPre42();
-    }
-}
-
-function disable() {
-    if (Main.sessionMode.isLocked) {
-        return
+export default class windowIsReadyRemover {
+    enable() {
+        this.blockSignal('window-demands-attention');
+        this.blockSignal('window-marked-urgent');
     }
 
-    if (major >= 42) {
-        unblockSignal('window-demands-attention');
-        unblockSignal('window-marked-urgent');
-    } else {
-        enableSignalsPre42();
-    }
-}
+    disable() {
+        if (Main.sessionMode.isLocked) {
+            return
+        }
 
-function blockSignal(id) {
-    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
-    GObject.signal_handler_block(global.display, signalId);
-}
-
-function unblockSignal(id){
-    let signalId = GObject.signal_handler_find(global.display, { signalId: id });
-    GObject.signal_handler_unblock(global.display, signalId);
-}
-
-function disableSignalsPre42() {
-    if (Handler._windowDemandsAttentionId) {
-        global.display.disconnect(Handler._windowDemandsAttentionId);
-        Handler._windowDemandsAttentionId = null;
+        this.unblockSignal('window-demands-attention');
+        this.unblockSignal('window-marked-urgent');
     }
-    if (Handler._windowMarkedUrgentId) {
-        global.display.disconnect(Handler._windowMarkedUrgentId);
-        Handler._windowMarkedUrgentId = null;
-    }
-}
 
-function enableSignalsPre42(){
-    if (!Handler._windowDemandsAttentionId) {
-        Handler._windowDemandsAttentionId = global.display.connect(
-            'window-demands-attention',
-            (display, window) => {
-                Handler._onWindowDemandsAttention(display, window);
-            }
-        );
+    blockSignal(id) {
+        let signalId = GObject.signal_handler_find(global.display, { signalId: id });
+        GObject.signal_handler_block(global.display, signalId);
     }
-    if (!Handler._windowMarkedUrgentId) {
-        Handler._windowMarkedUrgentId = global.display.connect(
-            'window-marked-urgent',
-            (display, window) => {
-                Handler._onWindowDemandsAttention(display, window);
-            }
-        );
+
+    unblockSignal(id){
+        let signalId = GObject.signal_handler_find(global.display, { signalId: id });
+        GObject.signal_handler_unblock(global.display, signalId);
     }
 }
