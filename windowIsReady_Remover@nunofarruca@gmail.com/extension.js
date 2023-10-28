@@ -1,7 +1,6 @@
 'use strict';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import GObject from 'gi://GObject';
 
 export default class windowIsReadyRemover {
