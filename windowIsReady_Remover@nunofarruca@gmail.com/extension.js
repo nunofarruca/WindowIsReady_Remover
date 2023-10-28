@@ -3,7 +3,6 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import GObject from 'gi://GObject';
-const Handler = Main.windowAttentionHandler;
 
 export default class windowIsReadyRemover {
     enable() {
