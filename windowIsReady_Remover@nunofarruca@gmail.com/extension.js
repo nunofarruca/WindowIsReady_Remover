@@ -10,10 +10,6 @@ export default class windowIsReadyRemover {
     }
 
     disable() {
-        if (Main.sessionMode.isLocked) {
-            return
-        }
-
         this.unblockSignal('window-demands-attention');
         this.unblockSignal('window-marked-urgent');
     }
