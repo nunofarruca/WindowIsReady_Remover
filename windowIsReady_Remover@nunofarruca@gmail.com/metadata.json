@@ -4,7 +4,8 @@
   "name": "Window Is Ready - Notification Remover", 
   "license": "Apache-2.0",
   "shell-version": [
-    "45"
+    "45",
+    "46"
   ],
   "url": "https://github.com/nunofarruca/WindowIsReady_Remover", 
   "uuid": "windowIsReady_Remover@nunofarruca@gmail.com", 
