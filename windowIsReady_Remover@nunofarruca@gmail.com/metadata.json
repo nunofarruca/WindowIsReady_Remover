@@ -5,7 +5,8 @@
   "license": "Apache-2.0",
   "shell-version": [
     "45",
-    "46"
+    "46",
+    "47"
   ],
   "url": "https://github.com/nunofarruca/WindowIsReady_Remover", 
   "uuid": "windowIsReady_Remover@nunofarruca@gmail.com", 
