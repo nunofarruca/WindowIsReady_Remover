@@ -14,13 +14,17 @@ export default class windowIsReadyRemover {
         this.unblockSignal('window-marked-urgent');
     }
 
-    blockSignal(id) {
-        let signalId = GObject.signal_handler_find(global.display, { signalId: id });
-        GObject.signal_handler_block(global.display, signalId);
+    getSignalHandlerId(signalId) {
+        return GObject.signal_handler_find(global.display, { signalId });
     }
 
-    unblockSignal(id){
-        let signalId = GObject.signal_handler_find(global.display, { signalId: id });
-        GObject.signal_handler_unblock(global.display, signalId);
+    blockSignal(signalId) {
+        const signalHandlerId = getSignalHandlerId(signalId);
+        GObject.signal_handler_block(global.display, signalHandlerId);
+    }
+
+    unblockSignal(signalId){
+        const signalHandlerId = getSignalHandlerId(signalId);
+        GObject.signal_handler_unblock(global.display, signalHandlerId);
     }
 }
