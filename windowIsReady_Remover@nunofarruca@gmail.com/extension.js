@@ -19,12 +19,12 @@ export default class windowIsReadyRemover {
     }
 
     blockSignal(signalId) {
-        const signalHandlerId = getSignalHandlerId(signalId);
+        const signalHandlerId = this.getSignalHandlerId(signalId);
         GObject.signal_handler_block(global.display, signalHandlerId);
     }
 
     unblockSignal(signalId){
-        const signalHandlerId = getSignalHandlerId(signalId);
+        const signalHandlerId = this.getSignalHandlerId(signalId);
         GObject.signal_handler_unblock(global.display, signalHandlerId);
     }
 }
